@@ -162,8 +162,6 @@ def analyze_content(file_location, request_id):
         "results": content_results,
     }
 
-    datetime.now().isoformat()
-
     file_path = construct_result_file_path(request_id)
     with open(file_path, "w") as f:
         json.dump(file_content, f, indent=4)
