@@ -26,19 +26,21 @@ You can access the automatically generated Swagger documentation for the API at 
 
 ### Testing Instructions
 
-#### Testing the POST /analysis Method
+#### You can use [Postman collection](https://github.com/user-attachments/files/15876549/collection.json) to run requests for creating analyses and retrieving results.
+
+#### Testing the POST `/analysis` Method
 ```bash
 curl -X POST "http://localhost:8000/analysis" -F "file=@path/to/your/file.jpg"
 ```
 > The response should contain a requestId.
 
-#### Testing the GET /analysis/{requestId} Method
+#### Testing the GET `/analysis/{requestId}` Method
 ```bash
 curl -X GET "http://localhost:8000/analysis/{requestId}"
 ```
 > The response should contain the analysis results.
 
-#### Testing the DELETE /analysis/{requestId} Method
+#### Testing the DELETE `/analysis/{requestId}` Method
 ```bash
 curl -X DELETE "http://localhost:8000/analysis/{requestId}"
 ```
