@@ -22,8 +22,6 @@ ARG LABELS_MAP_URL
 
 RUN wget -O ${ONNX_MODEL_NAME} ${ONNX_MODEL_URL}
 RUN wget -O ${LABELS_MAP_PATH} ${LABELS_MAP_URL}
-RUN mkdir -p /app/upload_files
-RUN mkdir -p /app/result_files
 
 RUN adduser --disabled-password --gecos '' appuser
 
@@ -41,6 +39,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg \
 COPY --from=builder /usr/local/lib/python3.10/site-packages /usr/local/lib/python3.10/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
 COPY --from=builder /app /app
+
+RUN mkdir -p /app/upload_files && \
+    mkdir -p /app/result_files
 
 RUN adduser --disabled-password --gecos '' appuser
 USER appuser
