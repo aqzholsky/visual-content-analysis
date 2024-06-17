@@ -1,0 +1,12 @@
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+venv
+env
+.git
+.dockerignore
+Dockerfile
+labels_map.txt
+*.onnx
+.python-version

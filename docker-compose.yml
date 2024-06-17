@@ -1,0 +1,17 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        ONNX_MODEL_NAME: ${ONNX_MODEL_NAME}
+        ONNX_MODEL_URL: ${ONNX_MODEL_URL}
+        LABELS_MAP_PATH: ${LABELS_MAP_PATH}
+        LABELS_MAP_URL: ${LABELS_MAP_URL}
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      - ./result_files:/app/result_files
+      - ./upload_files:/app/upload_files

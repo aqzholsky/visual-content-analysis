@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+.idea
+.vscode
+.DS_Store
+.env
+venv
+.cache
+.ipynb_checkpoints
+local*
+.pytest_cache
+.python-version
+labels_map.txt
+*.onnx
+/upload_files
+/result_files
