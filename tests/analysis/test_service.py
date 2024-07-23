@@ -1,5 +1,3 @@
-import json
-
 import pytest
 from freezegun import freeze_time
 
@@ -46,7 +44,9 @@ def test_photo_analysis(mocker):
     mock_analyze_frame.assert_called_once()
 
 
+@pytest.mark.asyncio
 class TestAnalyzeContent:
+
     @pytest.mark.parametrize(
         "file, strategy",
         [
@@ -58,31 +58,32 @@ class TestAnalyzeContent:
             ("file.mov", VideoAnalysis),
         ],
     )
-    @freeze_time("2024-06-17 21:00:15.201309")
-    def test(self, mocker, file, strategy, faker, tmpdir):
-        file_path = str(tmpdir.join(file))
-        mocker.patch(
-            "src.analysis.service.construct_result_file_path",
-            return_value=file_path,
+    async def test(self, mocker, file, strategy, faker):
+        mock_get_database = mocker.patch("src.analysis.service.get_database")
+        mock_insert_analysis_result = mocker.patch(
+            "src.analysis.service.insert_analysis_result"
         )
 
-        request_id = faker.uuid4()
-        mock_analyze = mocker.patch.object(
-            strategy,
-            "analyze",
-            return_value={"a": "b"},
-        )
+        with freeze_time("2024-06-17 21:00:15.201309"):
+            request_id = faker.uuid4()
+            mock_analyze = mocker.patch.object(
+                strategy,
+                "analyze",
+                return_value={"a": "b"},
+            )
 
-        analyze_content(file, request_id)
+            await analyze_content(file, request_id)
 
-        mock_analyze.assert_called_once_with(file)
-        with open(file_path) as f:
-            assert json.load(f) == {
-                "request_id": request_id,
-                "timestamp": "2024-06-17T21:00:15.201309",
-                "results": {"a": "b"},
-            }
+            mock_analyze.assert_called_once_with(file)
+            mock_insert_analysis_result.assert_called_once_with(
+                mock_get_database.return_value,
+                {
+                    "request_id": request_id,
+                    "timestamp": "2024-06-17T21:00:15.201309",
+                    "results": {"a": "b"},
+                },
+            )
 
-    def test_unsupported_content_type(self, faker):
+    async def test_unsupported_content_type(self, faker):
         with pytest.raises(ValueError, match="Unsupported content type"):
-            analyze_content("file.unsupported_extension", faker.uuid4())
+            await analyze_content("file.unsupported_extension", faker.uuid4())

@@ -11,9 +11,10 @@ import numpy as np
 import onnxruntime as rt
 
 from src.config import LABELS_MAP_PATH, ONNX_MODEL_NAME
+from src.db.mongodb import get_database
 
 from .constants import ANALYSIS_ACCURACY
-from .utils import construct_result_file_path
+from .crud import insert_analysis_result
 
 
 class AbstractFrameAnalysis(ABC):
@@ -139,7 +140,7 @@ class ContentAnalyzer:
         return self._strategy.analyze(content)
 
 
-def analyze_content(file_location, request_id):
+async def analyze_content(file_location, request_id):
     content_extension = os.path.splitext(file_location)[1]
 
     if content_extension in [
@@ -161,7 +162,5 @@ def analyze_content(file_location, request_id):
         "timestamp": datetime.now().isoformat(),
         "results": content_results,
     }
-
-    file_path = construct_result_file_path(request_id)
-    with open(file_path, "w") as f:
-        json.dump(file_content, f, indent=4)
+    db = await get_database()
+    await insert_analysis_result(db, file_content)

@@ -1,4 +1,3 @@
-import os
 from io import BytesIO
 from unittest.mock import AsyncMock
 
@@ -14,38 +13,73 @@ class TestAnalysis:
     def detail_url(self, analysis_url, request_id):
         return f"{analysis_url}/{request_id}"
 
-    @pytest.fixture
-    def setup_file(self, request_id):
-        os.makedirs("result_files", exist_ok=True)
-        file_path = f"result_files/result_{request_id}.json"
-        with open(file_path, "w") as file:
-            file.write('{"key": "value"}')
-        return file_path
-
     class TestGetAnalysis:
+        @pytest.fixture
+        def analysis_results(self):
+            return {
+                "request_id": "123",
+                "timestamp": "2021-01-01T00:00:00",
+                "results": [],
+            }
 
-        @pytest.mark.usefixtures("setup_file")
-        def test_get_analysis(self, test_client, detail_url):
+        def test_get_analysis(self, test_client, detail_url, analysis_results, mocker):
+            mocker.patch(
+                "src.analysis.router.get_analysis_by_request_id",
+                new_callable=AsyncMock,
+                return_value=analysis_results,
+            )
             response = test_client.get(detail_url)
             assert response.status_code == 200
-            assert response.json() == {"key": "value"}
+            assert response.json() == {
+                "request_id": "123",
+                "timestamp": "2021-01-01T00:00:00",
+                "results": [],
+            }
 
-        def test_get_analysis_not_found(self, test_client, detail_url):
+        def test_get_analysis_not_found(self, test_client, detail_url, mocker):
+            mocker.patch(
+                "src.analysis.router.get_analysis_by_request_id",
+                new_callable=AsyncMock,
+                return_value=None,
+            )
             response = test_client.get(detail_url)
             assert response.status_code == 404
             assert response.json() == {"detail": "Analysis not found"}
 
     class TestDeleteAnalysis:
 
-        @pytest.mark.usefixtures("setup_file")
-        def test_delete_analysis(self, test_client, detail_url):
+        @pytest.fixture(autouse=True)
+        def mock_delete_analysis_result(self, mocker):
+            return mocker.patch(
+                "src.analysis.router.delete_analysis_result",
+                new_callable=AsyncMock,
+                return_value=True,
+            )
+
+        def test_delete_analysis(
+            self, test_client, detail_url, mocker, mock_delete_analysis_result
+        ):
+            mocker.patch(
+                "src.analysis.router.is_analysis_exists",
+                new_callable=AsyncMock,
+                return_value=True,
+            )
             response = test_client.delete(detail_url)
             assert response.status_code == 200
+            mock_delete_analysis_result.assert_called_once()
 
-        def test_delete_analysis_not_found(self, test_client, detail_url):
+        def test_delete_analysis_not_found(
+            self, test_client, detail_url, mock_delete_analysis_result, mocker
+        ):
+            mocker.patch(
+                "src.analysis.router.is_analysis_exists",
+                new_callable=AsyncMock,
+                return_value=False,
+            )
             response = test_client.delete(detail_url)
             assert response.status_code == 404
             assert response.json() == {"detail": "Analysis not found"}
+            mock_delete_analysis_result.assert_not_called()
 
     def test_upload_file(self, test_client, mocker, faker, analysis_url):
         mock_analyze_content = mocker.patch(

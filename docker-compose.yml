@@ -1,5 +1,6 @@
 services:
   web:
+    container_name: web
     build:
       context: .
       dockerfile: Dockerfile
@@ -13,5 +14,16 @@ services:
     env_file:
       - .env
     volumes:
-      - ./result_files:/app/result_files
       - ./upload_files:/app/upload_files
+    depends_on:
+      - db
+  db:
+    container_name: db
+    image: mongo:latest
+    env_file:
+      - .env
+    ports:
+      - "27017:27017"
+volumes:
+  mongo_data:
+  upload_files:

@@ -5,7 +5,7 @@ import pytest
 from faker import Faker
 from fastapi.testclient import TestClient
 
-from src.analysis.constants import RESULT_FILE_DIR, UPLOAD_FILE_DIR
+from src.analysis.constants import UPLOAD_FILE_DIR
 from src.main import app
 
 
@@ -28,6 +28,5 @@ def analysis_url():
 @pytest.fixture(scope="module", autouse=True)
 def clear_dirs():
     yield
-    for directory in [UPLOAD_FILE_DIR, RESULT_FILE_DIR]:
-        if os.path.exists(directory):
-            shutil.rmtree(directory)
+    if os.path.exists(UPLOAD_FILE_DIR):
+        shutil.rmtree(UPLOAD_FILE_DIR)

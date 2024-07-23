@@ -5,14 +5,19 @@ The project provides an asynchronous uploading, analysis, and retrieval of infor
 
 ### Quickstart
 
-#### Create .env file
+#### Create ``.env`` file (or rename and modify ``.env.example``) in project root and set environment variables for application: ::
 ```shell
-DEBUG=<true|false> # true
-ONNX_MODEL_NAME=<path_to_model.onnx> # efficientnet-lite4-11.onnx
-ONNX_MODEL_URL=<url_to_model.onnx> # https://github.com/onnx/models/blob/main/validated/vision/classification/efficientnet-lite4/model/efficientnet-lite4-11.onnx?raw=true
-LABELS_MAP_PATH=<path_to_labels_map.txt> # labels_map.txt
-LABELS_MAP_URL=<url_to_labels_map.txt> # https://github.com/onnx/models/blob/main/validated/vision/classification/efficientnet-lite4/dependencies/labels_map.txt?raw=true
-
+touch .env
+echo "DEBUG=true" >> .env
+echo "ONNX_MODEL_NAME=efficientnet-lite4-11.onnx" >> .env
+echo "ONNX_MODEL_URL=https://github.com/onnx/models/blob/main/validated/vision/classification/efficientnet-lite4/model/efficientnet-lite4-11.onnx?raw=true" >> .env
+echo "LABELS_MAP_PATH=labels_map.txt" >> .env
+echo "LABELS_MAP_URL=https://github.com/onnx/models/blob/main/validated/vision/classification/efficientnet-lite4/dependencies/labels_map.txt?raw=true" >> .env
+echo "MONGO_INITDB_ROOT_USERNAME=root" >> .env
+echo "MONGO_INITDB_ROOT_PASSWORD=example" >> .env
+echo "MONGODB_URL=mongodb://root:example@db:27017" >> .env
+echo "MAX_CONNECTIONS_COUNT=10" >> .env
+echo "MIN_CONNECTIONS_COUNT=1" >> .env
 ```
 
 #### Run docker container
