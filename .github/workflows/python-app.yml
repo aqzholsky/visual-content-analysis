@@ -9,6 +9,16 @@ on:
 permissions:
   contents: read
 
+env:
+  DEBUG: ${{ secrets.DEBUG }}
+  ONNX_MODEL_NAME: ${{ secrets.ONNX_MODEL_NAME }}
+  ONNX_MODEL_URL: ${{ secrets.ONNX_MODEL_URL }}
+  LABELS_MAP_PATH: ${{ secrets.LABELS_MAP_PATH }}
+  LABELS_MAP_URL: ${{ secrets.LABELS_MAP_URL }}
+  MONGO_INITDB_ROOT_USERNAME: ${{ secrets.MONGO_INITDB_ROOT_USERNAME }}
+  MONGO_INITDB_ROOT_PASSWORD: ${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}
+  MONGODB_URL: ${{ secrets.MONGODB_URL }}
+
 jobs:
   build:
 
